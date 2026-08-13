@@ -1,0 +1,8 @@
+{
+  "name": "my-toolkit",
+  "version": "1.0.0",
+  "description": "My personal reusable development toolkit",
+  "main": "src/index.js",
+  "author": "aheiner2001",
+  "license": "ISC"
+}

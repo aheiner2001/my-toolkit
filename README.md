@@ -14,4 +14,4 @@ You can install this library directly into any project using npm/yarn.
 Run the following command in your project's terminal:
 
 ```bash
-npm install github:YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+npm install github:aheiner2001/my-toolkit

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Hero Section</title>
+  <!-- Tailwind CSS CDN for fast styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="m-0 p-0 bg-black text-white">
+
+  <!-- HERO SECTION CONTAINER -->
+  <header class="relative w-full h-screen overflow-hidden flex items-center justify-center">
+    
+    <!-- 1. Background Animation / Canvas Layer -->
+    <canvas id="heroCanvas1" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+    <!-- 2. Foreground Content Layer -->
+    <div class="relative z-10 text-center px-4">
+      <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-4">Welcome to My Site</h1>
+      <p class="text-gray-400 text-lg md:text-xl max-w-xl mx-auto mb-8">This text sits cleanly on top of any background component or canvas animation.</p>
+      <a href="#explore" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-full transition-all">Get Started</a>
+    </div>
+
+  </header>
+
+  <script>
+    // Quick script to verify canvas is running
+    const canvas = document.getElementById('heroCanvas1');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+
+    // Resize canvas if the window size changes
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Create a set of glowing "lights"
+    const lights = Array.from({ length: 25 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 40 + 10,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      color: ['#e63946', '#457b9d', '#f4a261', '#a8dadc'][Math.floor(Math.random() * 4)]
+    }));
+
+    // Animation Loop
+    function animate() {
+      // Clear the canvas each frame with a slight fade effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw each light
+      lights.forEach(light => {
+        light.x += light.vx;
+        light.y += light.vy;
+
+        // Bounce off screen edges
+        if (light.x < 0 || light.x > canvas.width) light.vx *= -1;
+        if (light.y < 0 || light.y > canvas.height) light.vy *= -1;
+
+        // Draw the glowing orb
+        ctx.save();
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = light.color;
+        ctx.fillStyle = light.color;
+        ctx.beginPath();
+        ctx.arc(light.x, light.y, light.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    // Start the animation
+    animate();
+  
+  </script>
+</body>
+</html>

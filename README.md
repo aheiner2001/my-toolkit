@@ -15,3 +15,7 @@ Run the following command in your project's terminal:
 
 ```bash
 npm install github:aheiner2001/my-toolkit
+
+## Layout recipes
+
+- [Snap-to-grid layouts](recipes/snap-grid-layout.json) covers Sunny's responsive dashboard and a freeform canvas with snapping, resizing, and grouping.

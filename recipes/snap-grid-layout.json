@@ -1,0 +1,88 @@
+{
+  "id": "snap-grid-layout",
+  "version": 1,
+  "title": "Snap-to-grid layouts for dashboards and canvases",
+  "purpose": "Add drag-and-drop and resizing to cards while preserving their controls, content, and saved state.",
+  "howToUse": [
+    "Choose dashboardGrid for cards that flow within responsive columns or freeformCanvas for a dotted workspace with pixel coordinates.",
+    "Use the profile values as starting defaults. Keep them configurable and derive the visual grid and snapping from the same settings.",
+    "Implement sharedRules and the selected profile. Use the acceptance checks to verify the integration."
+  ],
+  "reference": {
+    "repository": "https://github.com/aheiner2001/sunny",
+    "commit": "6d1c8183f31ef93f896e99fa184b1bc5c72d9708",
+    "files": {
+      "src/components/DashboardGrid.tsx": "Measures the container, renders react-grid-layout, and handles drag, resize, and preview state.",
+      "src/lib/dashboardGridLayout.ts": "Defines widget constraints, versioned layouts, normalization, migration, and per-user local storage.",
+      "src/app/dashboard/page.tsx": "Loads and saves the layout and connects customization, reset, visibility, and colors."
+    }
+  },
+  "sharedRules": [
+    "Give each widget a stable ID and keep layout data separate from its content and business state.",
+    "Use dedicated move and resize handles so buttons, inputs, and other card controls retain their behavior.",
+    "Apply live previews during gestures. Commit and save the final geometry on release. Restore the last committed geometry on cancel.",
+    "Set per-widget minimum sizes so the content and handles remain usable. Include keyboard controls and visible focus for custom handles.",
+    "Load older layouts with defaults for missing fields. Preserve zero coordinates and provide a reset or rearrange action."
+  ],
+  "profiles": {
+    "dashboardGrid": {
+      "engine": "react-grid-layout",
+      "units": "Grid columns and rows",
+      "breakpoints": [
+        { "id": "desktop", "minContainerWidthPx": 1000, "columns": 3 },
+        { "id": "tablet", "minContainerWidthPx": 640, "columns": 2 },
+        { "id": "phone", "minContainerWidthPx": 0, "columns": 1 }
+      ],
+      "rowHeightPx": 56,
+      "gapPx": [16, 16],
+      "containerPaddingPx": [0, 0],
+      "resizeHandles": ["east", "south", "southeast"],
+      "interaction": [
+        "Measure container width and load that breakpoint's layout.",
+        "Use a dedicated drag handle. Sunny enables dragging and shows resize handles in Customize mode.",
+        "Limit width to the active column count and height to the widget minimum and configured maximum.",
+        "Merge visible widgets back into the stored layout when committing. Keep hidden widgets and other breakpoints in state.",
+        "Normalize invalid or overlapping entries and add defaults for new widget IDs."
+      ],
+      "exampleState": {
+        "version": 2,
+        "layouts": {
+          "desktop": [{ "i": "activity", "x": 0, "y": 0, "w": 2, "h": 6 }],
+          "tablet": [{ "i": "activity", "x": 0, "y": 0, "w": 2, "h": 6 }],
+          "phone": [{ "i": "activity", "x": 0, "y": 0, "w": 1, "h": 6 }]
+        },
+        "hidden": [],
+        "colors": {}
+      }
+    },
+    "freeformCanvas": {
+      "engine": "CSS positioning and Pointer Events",
+      "units": "CSS pixels",
+      "stepPx": 24,
+      "snapFormula": "round(value / stepPx) * stepPx",
+      "boundsPolicy": "Clamp the top and left to zero. Expand the scrollable surface to fit the committed items.",
+      "overlapPolicy": "Allow overlap on a freeform canvas. Use a separate collision policy if the app requires it.",
+      "interaction": [
+        "Render dots at the configured step. Snap position changes and resized dimensions to that same step.",
+        "Capture the active pointer so mouse, pen, and touch can use the same gesture. Support arrow keys on the handles.",
+        "Allow multi-select and assign selected items a shared group ID. Move all group members by the same snapped delta and preserve their relative offsets.",
+        "Resize individual items within a group. Provide an Ungroup action that removes the group ID from each member.",
+        "Save geometry and group membership with the existing workspace. Clear Canvas styles in other modes while retaining the saved state.",
+        "When adapting this to Multi Stopwatch, display notes only in Canvas and retain their content on every mode switch."
+      ],
+      "exampleItems": [
+        { "id": "timer-1", "x": 24, "y": 24, "width": 288, "height": 240, "groupId": "group-1" },
+        { "id": "note-1", "x": 336, "y": 24, "width": 216, "height": 144, "groupId": "group-1" }
+      ]
+    }
+  },
+  "acceptanceChecks": [
+    "Drag and resize by a fractional step and confirm the final geometry lands on the grid.",
+    "Activate a card control or edit a field without triggering a layout gesture.",
+    "Cancel a gesture and verify the original geometry is restored.",
+    "Reload a workspace with saved geometry and a legacy workspace with missing dimensions.",
+    "Verify that dashboard layouts stay independent at each breakpoint.",
+    "Group a timer and note, move them, and verify their relative offsets survive reload.",
+    "Switch from Canvas to Inline and back. Check that the note returns and the timer keeps its timing state."
+  ]
+}
